@@ -126,19 +126,6 @@
       display: flex;
       gap: 8px;
       align-items: center;
-    }
-
-    .avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 850;
-      box-shadow: var(--shadow);
       flex-shrink: 0;
     }
 
@@ -156,12 +143,43 @@
       align-items: center;
       justify-content: center;
       box-shadow: var(--shadow);
+      flex-shrink: 0;
     }
 
     .icon-btn.light {
       background: var(--card);
       color: var(--text);
       border: 1px solid var(--line);
+    }
+
+    .today-btn {
+      height: 42px;
+      padding: 0 24px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 850;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow);
+      white-space: nowrap;
+      letter-spacing: -0.02em;
+      flex-shrink: 0;
+      transition: 0.18s ease;
+    }
+
+    .today-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    body[data-theme="dark"] .today-btn {
+      background: var(--card-2);
+      border-color: var(--line);
+      color: var(--text);
     }
 
     .page-grid {
@@ -804,6 +822,25 @@
         font-size: 24px;
       }
 
+      .brand .sub {
+        max-width: 170px;
+      }
+
+      .actions {
+        gap: 7px;
+      }
+
+      .today-btn {
+        height: 40px;
+        padding: 0 16px;
+        font-size: 14px;
+      }
+
+      .icon-btn {
+        width: 40px;
+        height: 40px;
+      }
+
       .panel-title h2 {
         font-size: 30px;
       }
@@ -858,8 +895,7 @@
       </div>
 
       <div class="actions">
-        <div class="avatar" id="desktopAvatar">A</div>
-        <button class="icon-btn light" id="desktopTodayBtn">Сегодня</button>
+        <button class="today-btn" id="desktopTodayBtn">Сегодня</button>
         <button class="icon-btn" id="desktopAddBtn">+</button>
       </div>
     </header>
@@ -871,7 +907,7 @@
       </div>
 
       <div class="actions">
-        <div class="avatar" id="mobileAvatar">A</div>
+        <button class="today-btn" id="mobileTodayBtn">Сегодня</button>
         <button class="icon-btn" id="mobileAddBtn">+</button>
       </div>
     </header>
@@ -978,17 +1014,11 @@
     const taskNotesInput = document.getElementById("taskNotes");
     const modalTitle = document.getElementById("modalTitle");
 
-    document.getElementById("desktopAvatar").textContent = getAvatarLetter();
-    document.getElementById("mobileAvatar").textContent = getAvatarLetter();
-
     document.getElementById("desktopAddBtn").onclick = () => openModal();
     document.getElementById("mobileAddBtn").onclick = () => openModal();
 
-    document.getElementById("desktopTodayBtn").onclick = () => {
-      state.selectedDate = formatDate(new Date());
-      state.currentMonth = startOfMonth(new Date());
-      render();
-    };
+    document.getElementById("desktopTodayBtn").onclick = () => goToday();
+    document.getElementById("mobileTodayBtn").onclick = () => goToday();
 
     document.getElementById("closeModalBtn").onclick = closeModal;
     document.getElementById("cancelModalBtn").onclick = closeModal;
@@ -1065,6 +1095,12 @@
       closeModal();
       render();
     });
+
+    function goToday() {
+      state.selectedDate = formatDate(new Date());
+      state.currentMonth = startOfMonth(new Date());
+      render();
+    }
 
     function loadTasks() {
       try {
@@ -1229,11 +1265,6 @@
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#39;");
-    }
-
-    function getAvatarLetter() {
-      const name = tg?.initDataUnsafe?.user?.first_name || "A";
-      return name.trim().charAt(0).toUpperCase();
     }
 
     function render() {
