@@ -2,145 +2,1020 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>Мой планнер</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Мой Планнер</title>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
     * {
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --bg: #ffffff;
+      --text: #111111;
+      --muted: #8a8a8a;
+      --line: #eeeeee;
+      --soft: #f7f7f8;
+      --accent: #5d6dfe;
+      --accent-soft: #eef0ff;
+      --danger: #ff4d4f;
+      --radius: 22px;
     }
 
     body {
       margin: 0;
-      padding: 24px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      background: #ffffff;
-      color: #111111;
+      background: var(--bg);
+      color: var(--text);
     }
 
     .app {
-      max-width: 480px;
+      max-width: 620px;
       margin: 0 auto;
+      min-height: 100vh;
+      padding: 22px 18px 96px;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 24px;
     }
 
     h1 {
-      font-size: 32px;
-      line-height: 1.1;
       margin: 0;
+      font-size: 34px;
+      line-height: 1.05;
+      font-weight: 850;
+      letter-spacing: -0.8px;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .small-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 650;
+      color: var(--text);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .date-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 4px 0 14px;
+      margin-bottom: 12px;
+    }
+
+    .date-pill {
+      min-width: 58px;
+      padding: 10px 8px;
+      border-radius: 18px;
+      background: var(--soft);
+      border: 1px solid transparent;
+      text-align: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .date-pill.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .date-pill .day {
+      font-size: 18px;
       font-weight: 800;
     }
 
-    .date {
-      color: #8b8b8b;
-      font-size: 15px;
-      margin-top: 6px;
-      margin-bottom: 28px;
+    .date-pill .week {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .date-pill.active .week {
+      color: rgba(255,255,255,0.82);
     }
 
     .card {
-      border: 1px solid #eeeeee;
-      border-radius: 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
       padding: 18px;
       margin-bottom: 14px;
-      background: #ffffff;
+      background: #fff;
     }
 
     .card-title {
-      font-size: 18px;
-      font-weight: 700;
+      font-size: 21px;
+      font-weight: 800;
       margin-bottom: 14px;
+      letter-spacing: -0.3px;
+    }
+
+    .empty {
+      padding: 20px 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.45;
     }
 
     .task {
-      display: flex;
+      display: grid;
+      grid-template-columns: 26px 1fr auto;
       align-items: center;
       gap: 10px;
-      padding: 12px 0;
-      border-bottom: 1px solid #f1f1f1;
-      font-size: 16px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line);
     }
 
     .task:last-child {
       border-bottom: none;
     }
 
-    .circle {
-      width: 20px;
-      height: 20px;
-      border: 1.5px solid #cfcfcf;
+    .check {
+      width: 24px;
+      height: 24px;
+      border: 1.8px solid #cfcfcf;
       border-radius: 50%;
-      flex-shrink: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
     }
 
-    .done {
-      color: #b5b5b5;
+    .check.done {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .task-main {
+      min-width: 0;
+    }
+
+    .task-title {
+      font-size: 16px;
+      line-height: 1.35;
+      font-weight: 560;
+      word-break: break-word;
+    }
+
+    .task-title.done {
+      color: #b6b6b6;
       text-decoration: line-through;
     }
 
-    .button {
+    .task-meta {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      border: none;
+      background: var(--soft);
+      color: var(--text);
+      border-radius: 12px;
+      width: 34px;
+      height: 34px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .icon-btn.delete {
+      color: var(--danger);
+    }
+
+    .main-button {
       width: 100%;
-      margin-top: 18px;
       padding: 16px;
       border: none;
       border-radius: 18px;
-      background: #5d6dfe;
-      color: white;
+      background: var(--accent);
+      color: #fff;
       font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      width: calc(100% - 28px);
+      max-width: 620px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 8px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      z-index: 10;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    }
+
+    .nav-btn {
+      border: none;
+      background: transparent;
+      border-radius: 17px;
+      padding: 10px 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .nav-btn.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.28);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 30;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 620px;
+      background: #fff;
+      border-radius: 28px 28px 0 0;
+      padding: 20px 18px 24px;
+      box-shadow: 0 -12px 40px rgba(0,0,0,0.16);
+    }
+
+    .modal-title {
+      font-size: 24px;
+      font-weight: 850;
+      margin-bottom: 16px;
+      letter-spacing: -0.4px;
+    }
+
+    label {
+      display: block;
+      margin: 14px 0 7px;
+      font-size: 13px;
+      color: var(--muted);
       font-weight: 700;
     }
 
-    .note {
-      color: #666666;
-      line-height: 1.5;
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      border-radius: 16px;
+      padding: 14px;
+      font-size: 16px;
+      font-family: inherit;
+      outline: none;
+      color: var(--text);
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .secondary-button {
+      width: 100%;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: #fff;
+      color: var(--text);
       font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .week-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .week-day {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 15px;
+    }
+
+    .week-day-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-weight: 800;
+    }
+
+    .week-day-date {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .mini-task {
+      padding: 8px 0;
+      border-top: 1px solid var(--line);
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .mini-task.done {
+      color: #b6b6b6;
+      text-decoration: line-through;
+    }
+
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .month-head {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+      font-weight: 800;
+      padding: 8px 0;
+    }
+
+    .month-cell {
+      min-height: 58px;
+      background: var(--soft);
+      border-radius: 15px;
+      padding: 8px;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .month-cell.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .month-cell.empty-cell {
+      background: transparent;
+      cursor: default;
+    }
+
+    .month-number {
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .dots {
+      display: flex;
+      gap: 3px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .note-item {
+      border-bottom: 1px solid var(--line);
+      padding: 14px 0;
+      cursor: pointer;
+    }
+
+    .note-item:last-child {
+      border-bottom: none;
+    }
+
+    .note-title {
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .note-text {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    @media (min-width: 720px) {
+      .modal {
+        align-items: center;
+      }
+
+      .modal-box {
+        border-radius: 28px;
+      }
     }
   </style>
 </head>
 
 <body>
   <div class="app">
-    <h1>Сегодня</h1>
-    <div class="date">Мой Telegram-планнер</div>
-
-    <div class="card">
-      <div class="card-title">Задачи</div>
-
-      <div class="task">
-        <div class="circle"></div>
-        <div>Создать первую задачу</div>
+    <div class="top">
+      <div>
+        <h1 id="pageTitle">Сегодня</h1>
+        <div class="subtitle" id="pageSubtitle">Твои задачи и планы на день</div>
       </div>
-
-      <div class="task">
-        <div class="circle"></div>
-        <div>Проверить календарь</div>
-      </div>
-
-      <div class="task">
-        <div class="circle"></div>
-        <div class="done">Придумать идею приложения</div>
-      </div>
+      <button class="small-btn" onclick="openTaskModal()">+ Задача</button>
     </div>
 
-    <div class="card">
-      <div class="card-title">Заметка</div>
-      <div class="note">
-        Здесь будет приложение для задач, заметок, календаря и напоминаний.
+    <section id="today" class="section active">
+      <div class="date-row" id="dateRow"></div>
+
+      <div class="card">
+        <div class="card-title" id="selectedDateTitle">Задачи</div>
+        <div id="todayTasks"></div>
+        <button class="main-button" onclick="openTaskModal()">Добавить задачу</button>
+      </div>
+    </section>
+
+    <section id="week" class="section">
+      <div class="card">
+        <div class="card-title">План на неделю</div>
+        <div class="week-grid" id="weekGrid"></div>
+      </div>
+    </section>
+
+    <section id="month" class="section">
+      <div class="card">
+        <div class="card-title" id="monthTitle">Месяц</div>
+        <div class="month-grid" id="monthGrid"></div>
+      </div>
+    </section>
+
+    <section id="notes" class="section">
+      <div class="card">
+        <div class="card-title">Заметки</div>
+        <div id="notesList"></div>
+        <button class="main-button" onclick="openNoteModal()">Добавить заметку</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="showSection('today', this)">Сегодня</button>
+    <button class="nav-btn" onclick="showSection('week', this)">Неделя</button>
+    <button class="nav-btn" onclick="showSection('month', this)">Месяц</button>
+    <button class="nav-btn" onclick="showSection('notes', this)">Заметки</button>
+  </div>
+
+  <div id="taskModal" class="modal">
+    <div class="modal-box">
+      <div class="modal-title" id="taskModalTitle">Новая задача</div>
+
+      <label>Название задачи</label>
+      <input id="taskTitleInput" type="text" placeholder="Например: подготовить план на неделю" />
+
+      <label>Дата</label>
+      <input id="taskDateInput" type="date" />
+
+      <label>Время</label>
+      <input id="taskTimeInput" type="time" />
+
+      <label>Описание / план</label>
+      <textarea id="taskTextInput" placeholder="Можно добавить детали задачи"></textarea>
+
+      <label>Приоритет</label>
+      <select id="taskPriorityInput">
+        <option value="Обычная">Обычная</option>
+        <option value="Важная">Важная</option>
+        <option value="Срочная">Срочная</option>
+      </select>
+
+      <div class="modal-actions">
+        <button class="secondary-button" onclick="closeTaskModal()">Отмена</button>
+        <button class="main-button" onclick="saveTask()">Сохранить</button>
       </div>
     </div>
+  </div>
 
-    <button class="button" onclick="alert('Mini App работает')">
-      Добавить задачу
-    </button>
+  <div id="noteModal" class="modal">
+    <div class="modal-box">
+      <div class="modal-title" id="noteModalTitle">Новая заметка</div>
+
+      <label>Заголовок</label>
+      <input id="noteTitleInput" type="text" placeholder="Название заметки" />
+
+      <label>Текст заметки</label>
+      <textarea id="noteTextInput" placeholder="Напиши заметку"></textarea>
+
+      <div class="modal-actions">
+        <button class="secondary-button" onclick="closeNoteModal()">Отмена</button>
+        <button class="main-button" onclick="saveNote()">Сохранить</button>
+      </div>
+    </div>
   </div>
 
   <script>
-    const tg = window.Telegram.WebApp;
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
 
-    tg.ready();
-    tg.expand();
+    const weekNames = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+    const monthNames = [
+      "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
+      "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
+    ];
+
+    let tasks = JSON.parse(localStorage.getItem("plannerTasks") || "[]");
+    let notes = JSON.parse(localStorage.getItem("plannerNotes") || "[]");
+
+    let selectedDate = toDateKey(new Date());
+    let editingTaskId = null;
+    let editingNoteId = null;
+
+    function saveStorage() {
+      localStorage.setItem("plannerTasks", JSON.stringify(tasks));
+      localStorage.setItem("plannerNotes", JSON.stringify(notes));
+    }
+
+    function toDateKey(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function fromDateKey(key) {
+      const [year, month, day] = key.split("-").map(Number);
+      return new Date(year, month - 1, day);
+    }
+
+    function formatDateRu(key) {
+      const date = fromDateKey(key);
+      return `${date.getDate()} ${monthNames[date.getMonth()].toLowerCase()} ${date.getFullYear()}`;
+    }
+
+    function showSection(sectionId, button) {
+      document.querySelectorAll(".section").forEach(section => {
+        section.classList.remove("active");
+      });
+
+      document.getElementById(sectionId).classList.add("active");
+
+      document.querySelectorAll(".nav-btn").forEach(btn => {
+        btn.classList.remove("active");
+      });
+
+      button.classList.add("active");
+
+      const titles = {
+        today: ["Сегодня", "Твои задачи и планы на день"],
+        week: ["Неделя", "Общий план по дням"],
+        month: ["Месяц", "Календарь задач"],
+        notes: ["Заметки", "Идеи, списки и важная информация"]
+      };
+
+      document.getElementById("pageTitle").textContent = titles[sectionId][0];
+      document.getElementById("pageSubtitle").textContent = titles[sectionId][1];
+
+      renderAll();
+    }
+
+    function renderAll() {
+      renderDateRow();
+      renderTodayTasks();
+      renderWeek();
+      renderMonth();
+      renderNotes();
+    }
+
+    function renderDateRow() {
+      const row = document.getElementById("dateRow");
+      row.innerHTML = "";
+
+      const today = new Date();
+
+      for (let i = -3; i <= 10; i++) {
+        const date = new Date();
+        date.setDate(today.getDate() + i);
+
+        const key = toDateKey(date);
+        const pill = document.createElement("div");
+        pill.className = "date-pill" + (key === selectedDate ? " active" : "");
+        pill.onclick = () => {
+          selectedDate = key;
+          renderAll();
+        };
+
+        pill.innerHTML = `
+          <div class="day">${date.getDate()}</div>
+          <div class="week">${weekNames[date.getDay()]}</div>
+        `;
+
+        row.appendChild(pill);
+      }
+    }
+
+    function renderTodayTasks() {
+      const box = document.getElementById("todayTasks");
+      const title = document.getElementById("selectedDateTitle");
+
+      title.textContent = `Задачи на ${formatDateRu(selectedDate)}`;
+
+      const dayTasks = tasks
+        .filter(task => task.date === selectedDate)
+        .sort((a, b) => (a.time || "").localeCompare(b.time || ""));
+
+      if (dayTasks.length === 0) {
+        box.innerHTML = `<div class="empty">На этот день пока нет задач. Добавь первую задачу или план.</div>`;
+        return;
+      }
+
+      box.innerHTML = dayTasks.map(task => `
+        <div class="task">
+          <div class="check ${task.done ? "done" : ""}" onclick="toggleTask('${task.id}')">
+            ${task.done ? "✓" : ""}
+          </div>
+
+          <div class="task-main">
+            <div class="task-title ${task.done ? "done" : ""}">${escapeHtml(task.title)}</div>
+            <div class="task-meta">
+              ${task.time ? task.time + " · " : ""}
+              ${task.priority}
+              ${task.text ? " · есть описание" : ""}
+            </div>
+          </div>
+
+          <div class="task-actions">
+            <button class="icon-btn" onclick="editTask('${task.id}')">✎</button>
+            <button class="icon-btn delete" onclick="deleteTask('${task.id}')">×</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderWeek() {
+      const grid = document.getElementById("weekGrid");
+      grid.innerHTML = "";
+
+      const current = fromDateKey(selectedDate);
+      const day = current.getDay();
+      const diffToMonday = day === 0 ? -6 : 1 - day;
+
+      const monday = new Date(current);
+      monday.setDate(current.getDate() + diffToMonday);
+
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(monday);
+        date.setDate(monday.getDate() + i);
+        const key = toDateKey(date);
+
+        const dayTasks = tasks
+          .filter(task => task.date === key)
+          .sort((a, b) => (a.time || "").localeCompare(b.time || ""));
+
+        const block = document.createElement("div");
+        block.className = "week-day";
+
+        block.innerHTML = `
+          <div class="week-day-head">
+            <div>${weekNames[date.getDay()]}</div>
+            <div class="week-day-date">${date.getDate()} ${monthNames[date.getMonth()].toLowerCase()}</div>
+          </div>
+
+          ${
+            dayTasks.length
+              ? dayTasks.map(task => `
+                <div class="mini-task ${task.done ? "done" : ""}">
+                  ${task.time ? task.time + " · " : ""}${escapeHtml(task.title)}
+                </div>
+              `).join("")
+              : `<div class="empty">Нет задач</div>`
+          }
+        `;
+
+        grid.appendChild(block);
+      }
+    }
+
+    function renderMonth() {
+      const grid = document.getElementById("monthGrid");
+      const selected = fromDateKey(selectedDate);
+      const year = selected.getFullYear();
+      const month = selected.getMonth();
+
+      document.getElementById("monthTitle").textContent = `${monthNames[month]} ${year}`;
+      grid.innerHTML = "";
+
+      ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"].forEach(day => {
+        const head = document.createElement("div");
+        head.className = "month-head";
+        head.textContent = day;
+        grid.appendChild(head);
+      });
+
+      const firstDay = new Date(year, month, 1);
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      let startOffset = firstDay.getDay() - 1;
+      if (startOffset < 0) startOffset = 6;
+
+      for (let i = 0; i < startOffset; i++) {
+        const empty = document.createElement("div");
+        empty.className = "month-cell empty-cell";
+        grid.appendChild(empty);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day);
+        const key = toDateKey(date);
+        const dayTasks = tasks.filter(task => task.date === key);
+
+        const cell = document.createElement("div");
+        cell.className = "month-cell" + (key === selectedDate ? " active" : "");
+        cell.onclick = () => {
+          selectedDate = key;
+          renderAll();
+          document.querySelectorAll(".section").forEach(section => section.classList.remove("active"));
+          document.getElementById("today").classList.add("active");
+          document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
+          document.querySelector(".nav-btn").classList.add("active");
+          document.getElementById("pageTitle").textContent = "Сегодня";
+          document.getElementById("pageSubtitle").textContent = "Твои задачи и планы на день";
+        };
+
+        cell.innerHTML = `
+          <div class="month-number">${day}</div>
+          <div class="dots">
+            ${dayTasks.slice(0, 4).map(() => `<div class="dot"></div>`).join("")}
+          </div>
+        `;
+
+        grid.appendChild(cell);
+      }
+    }
+
+    function renderNotes() {
+      const box = document.getElementById("notesList");
+
+      if (notes.length === 0) {
+        box.innerHTML = `<div class="empty">Заметок пока нет. Добавь первую идею, список или важную мысль.</div>`;
+        return;
+      }
+
+      box.innerHTML = notes.map(note => `
+        <div class="note-item" onclick="editNote('${note.id}')">
+          <div class="note-title">${escapeHtml(note.title || "Без названия")}</div>
+          <div class="note-text">${escapeHtml(note.text || "")}</div>
+        </div>
+      `).join("");
+    }
+
+    function openTaskModal() {
+      editingTaskId = null;
+
+      document.getElementById("taskModalTitle").textContent = "Новая задача";
+      document.getElementById("taskTitleInput").value = "";
+      document.getElementById("taskDateInput").value = selectedDate;
+      document.getElementById("taskTimeInput").value = "";
+      document.getElementById("taskTextInput").value = "";
+      document.getElementById("taskPriorityInput").value = "Обычная";
+
+      document.getElementById("taskModal").classList.add("active");
+      setTimeout(() => document.getElementById("taskTitleInput").focus(), 100);
+    }
+
+    function closeTaskModal() {
+      document.getElementById("taskModal").classList.remove("active");
+    }
+
+    function saveTask() {
+      const title = document.getElementById("taskTitleInput").value.trim();
+      const date = document.getElementById("taskDateInput").value;
+      const time = document.getElementById("taskTimeInput").value;
+      const text = document.getElementById("taskTextInput").value.trim();
+      const priority = document.getElementById("taskPriorityInput").value;
+
+      if (!title) {
+        alert("Напиши название задачи");
+        return;
+      }
+
+      if (!date) {
+        alert("Выбери дату");
+        return;
+      }
+
+      if (editingTaskId) {
+        tasks = tasks.map(task => {
+          if (task.id === editingTaskId) {
+            return {
+              ...task,
+              title,
+              date,
+              time,
+              text,
+              priority
+            };
+          }
+
+          return task;
+        });
+      } else {
+        tasks.push({
+          id: String(Date.now()),
+          title,
+          date,
+          time,
+          text,
+          priority,
+          done: false,
+          createdAt: new Date().toISOString()
+        });
+      }
+
+      selectedDate = date;
+      saveStorage();
+      closeTaskModal();
+      renderAll();
+    }
+
+    function editTask(id) {
+      const task = tasks.find(item => item.id === id);
+      if (!task) return;
+
+      editingTaskId = id;
+
+      document.getElementById("taskModalTitle").textContent = "Редактировать задачу";
+      document.getElementById("taskTitleInput").value = task.title;
+      document.getElementById("taskDateInput").value = task.date;
+      document.getElementById("taskTimeInput").value = task.time || "";
+      document.getElementById("taskTextInput").value = task.text || "";
+      document.getElementById("taskPriorityInput").value = task.priority || "Обычная";
+
+      document.getElementById("taskModal").classList.add("active");
+    }
+
+    function deleteTask(id) {
+      if (!confirm("Удалить задачу?")) return;
+
+      tasks = tasks.filter(task => task.id !== id);
+      saveStorage();
+      renderAll();
+    }
+
+    function toggleTask(id) {
+      tasks = tasks.map(task => {
+        if (task.id === id) {
+          return {
+            ...task,
+            done: !task.done
+          };
+        }
+
+        return task;
+      });
+
+      saveStorage();
+      renderAll();
+    }
+
+    function openNoteModal() {
+      editingNoteId = null;
+
+      document.getElementById("noteModalTitle").textContent = "Новая заметка";
+      document.getElementById("noteTitleInput").value = "";
+      document.getElementById("noteTextInput").value = "";
+
+      document.getElementById("noteModal").classList.add("active");
+      setTimeout(() => document.getElementById("noteTitleInput").focus(), 100);
+    }
+
+    function closeNoteModal() {
+      document.getElementById("noteModal").classList.remove("active");
+    }
+
+    function saveNote() {
+      const title = document.getElementById("noteTitleInput").value.trim();
+      const text = document.getElementById("noteTextInput").value.trim();
+
+      if (!title && !text) {
+        alert("Напиши заголовок или текст заметки");
+        return;
+      }
+
+      if (editingNoteId) {
+        notes = notes.map(note => {
+          if (note.id === editingNoteId) {
+            return {
+              ...note,
+              title,
+              text,
+              updatedAt: new Date().toISOString()
+            };
+          }
+
+          return note;
+        });
+      } else {
+        notes.unshift({
+          id: String(Date.now()),
+          title,
+          text,
+          createdAt: new Date().toISOString()
+        });
+      }
+
+      saveStorage();
+      closeNoteModal();
+      renderAll();
+    }
+
+    function editNote(id) {
+      const note = notes.find(item => item.id === id);
+      if (!note) return;
+
+      editingNoteId = id;
+
+      document.getElementById("noteModalTitle").textContent = "Редактировать заметку";
+      document.getElementById("noteTitleInput").value = note.title || "";
+      document.getElementById("noteTextInput").value = note.text || "";
+
+      document.getElementById("noteModal").classList.add("active");
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    document.getElementById("taskModal").addEventListener("click", function(event) {
+      if (event.target === this) {
+        closeTaskModal();
+      }
+    });
+
+    document.getElementById("noteModal").addEventListener("click", function(event) {
+      if (event.target === this) {
+        closeNoteModal();
+      }
+    });
+
+    renderAll();
   </script>
 </body>
 </html>
