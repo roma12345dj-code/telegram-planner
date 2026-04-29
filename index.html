@@ -4,7 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Мой Планнер</title>
+<link rel="manifest" href="./manifest.json" />
+<link rel="icon" href="./icon.svg" type="image/svg+xml" />
 
+<meta name="theme-color" content="#f4f1eb" />
+<meta name="application-name" content="Мой Планнер" />
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Мой Планнер" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.3/Sortable.min.js"></script>
 
@@ -1628,5 +1636,19 @@
     applyTheme(state.theme);
     render();
   </script>
+  <script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("./service-worker.js")
+        .then(registration => {
+          console.log("Service Worker зарегистрирован:", registration.scope);
+        })
+        .catch(error => {
+          console.error("Ошибка регистрации Service Worker:", error);
+        });
+    });
+  }
+</script>
 </body>
 </html>
