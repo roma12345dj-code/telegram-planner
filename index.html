@@ -16,13 +16,52 @@
       --text: #111111;
       --muted: #7d7a74;
       --line: #d8d2c8;
-      --accent: #ff2d20;
+      --accent: #ff3b30;
       --black: #111111;
       --white: #ffffff;
       --shadow: 0 12px 36px rgba(17, 17, 17, 0.07);
       --radius-xl: 28px;
       --radius-lg: 22px;
       --radius-md: 16px;
+    }
+
+    body[data-theme="cream"] {
+      --bg: #f4f1eb;
+      --card: #fbfaf7;
+      --card-2: #f8f5ee;
+      --text: #111111;
+      --muted: #7d7a74;
+      --line: #d8d2c8;
+      --accent: #ff3b30;
+      --black: #111111;
+      --white: #ffffff;
+      --shadow: 0 12px 36px rgba(17, 17, 17, 0.07);
+    }
+
+    body[data-theme="white"] {
+      --bg: #ffffff;
+      --card: #ffffff;
+      --card-2: #f7f7f7;
+      --text: #111111;
+      --muted: #707070;
+      --line: #e6e6e6;
+      --accent: #2f6bff;
+      --black: #111111;
+      --white: #ffffff;
+      --shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
+    }
+
+    body[data-theme="dark"] {
+      --bg: #0f1115;
+      --card: #171a21;
+      --card-2: #1d212a;
+      --text: #f3f4f6;
+      --muted: #9aa3b2;
+      --line: #2c3340;
+      --accent: #ff5a4f;
+      --black: #f3f4f6;
+      --white: #111111;
+      --shadow: 0 14px 36px rgba(0, 0, 0, 0.35);
     }
 
     * {
@@ -37,6 +76,7 @@
       background: var(--bg);
       color: var(--text);
       font-family: "Avenir Next Cyr", "Avenir Next", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      transition: background 0.25s ease, color 0.25s ease;
     }
 
     body {
@@ -60,7 +100,7 @@
       display: none;
     }
 
-    .topbar {
+    .mobile-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
@@ -93,7 +133,7 @@
       height: 42px;
       border-radius: 50%;
       background: var(--accent);
-      color: var(--white);
+      color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -108,7 +148,7 @@
       border-radius: 50%;
       border: 0;
       background: var(--black);
-      color: var(--white);
+      color: var(--bg);
       font-size: 18px;
       font-weight: 800;
       cursor: pointer;
@@ -126,16 +166,17 @@
 
     .page-grid {
       display: block;
-      padding-bottom: 88px;
+      padding-bottom: 144px;
     }
 
     .panel {
       display: none;
       background: var(--card);
-      border: 1px solid rgba(216, 210, 200, 0.9);
+      border: 1px solid var(--line);
       border-radius: var(--radius-xl);
       box-shadow: var(--shadow);
       padding: 16px;
+      transition: background 0.25s ease, border-color 0.25s ease;
     }
 
     .panel.active {
@@ -192,7 +233,7 @@
     .day-cell {
       min-height: 94px;
       background: var(--card-2);
-      border: 1px solid rgba(216, 210, 200, 0.8);
+      border: 1px solid var(--line);
       border-radius: 18px;
       padding: 8px;
       cursor: pointer;
@@ -215,7 +256,7 @@
 
     .day-cell.today .day-number {
       background: var(--accent);
-      color: var(--white);
+      color: #ffffff;
     }
 
     .day-head {
@@ -252,6 +293,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       line-height: 1.1;
+      color: #111111;
     }
 
     .mini-more {
@@ -269,7 +311,7 @@
 
     .summary-box {
       background: var(--card-2);
-      border: 1px solid rgba(216, 210, 200, 0.85);
+      border: 1px solid var(--line);
       border-radius: 18px;
       padding: 12px;
     }
@@ -338,10 +380,11 @@
       margin-bottom: 6px;
       padding: 4px 10px;
       border-radius: 999px;
-      background: #ebe6dc;
-      border: 1px solid rgba(216, 210, 200, 0.9);
+      background: var(--card-2);
+      border: 1px solid var(--line);
       font-size: 12px;
       font-weight: 800;
+      color: var(--text);
     }
 
     .task-notes {
@@ -387,8 +430,8 @@
     }
 
     .small-btn.done {
-      background: #ded9cf;
-      color: #666;
+      background: var(--card-2);
+      color: var(--muted);
     }
 
     .add-button {
@@ -396,8 +439,8 @@
       margin-top: 18px;
       border: 0;
       border-radius: 20px;
-      background: linear-gradient(180deg, #202020, #111111);
-      color: var(--white);
+      background: var(--black);
+      color: var(--bg);
       padding: 17px;
       font-size: 17px;
       font-weight: 850;
@@ -414,7 +457,7 @@
 
     .stats-card {
       background: var(--card-2);
-      border: 1px solid rgba(216, 210, 200, 0.85);
+      border: 1px solid var(--line);
       border-radius: 22px;
       padding: 14px;
       margin-bottom: 14px;
@@ -430,14 +473,14 @@
     .progress {
       height: 13px;
       border-radius: 999px;
-      background: #e8e1d6;
+      background: color-mix(in srgb, var(--line) 75%, transparent);
       overflow: hidden;
     }
 
     .progress-fill {
       height: 100%;
       border-radius: inherit;
-      background: linear-gradient(90deg, #111111, #ff2d20);
+      background: linear-gradient(90deg, var(--black), var(--accent));
       transition: 0.25s ease;
     }
 
@@ -467,18 +510,18 @@
     .bar-track {
       height: 14px;
       border-radius: 999px;
-      background: #e8e1d6;
+      background: color-mix(in srgb, var(--line) 75%, transparent);
       overflow: hidden;
     }
 
     .bar-fill {
       height: 100%;
       border-radius: inherit;
-      background: #cfc7ba;
+      background: var(--line);
     }
 
     .bar-fill.hot {
-      background: linear-gradient(90deg, #111111, #ff2d20);
+      background: linear-gradient(90deg, var(--black), var(--accent));
     }
 
     .bar-value {
@@ -495,7 +538,7 @@
       display: flex;
       gap: 6px;
       background: rgba(251, 250, 247, 0.94);
-      border: 1px solid rgba(216, 210, 200, 0.96);
+      border: 1px solid var(--line);
       border-radius: 999px;
       padding: 6px;
       z-index: 20;
@@ -517,7 +560,52 @@
 
     .nav-btn.active {
       background: var(--black);
-      color: var(--white);
+      color: var(--bg);
+    }
+
+    .theme-switcher {
+      position: fixed;
+      left: 50%;
+      bottom: 78px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      background: rgba(251, 250, 247, 0.94);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px;
+      z-index: 21;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .theme-btn {
+      min-width: 88px;
+      height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--card);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 850;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .theme-btn.active {
+      background: var(--black);
+      color: var(--bg);
+      border-color: var(--black);
+    }
+
+    body[data-theme="dark"] .theme-switcher,
+    body[data-theme="dark"] .bottom-nav {
+      background: rgba(23, 26, 33, 0.94);
+    }
+
+    body[data-theme="white"] .theme-switcher,
+    body[data-theme="white"] .bottom-nav {
+      background: rgba(255, 255, 255, 0.94);
     }
 
     .modal {
@@ -582,7 +670,7 @@
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 16px;
-      background: #f9f7f2;
+      background: var(--card-2);
       color: var(--text);
       padding: 14px;
       font-size: 15px;
@@ -624,12 +712,13 @@
 
     .btn.primary {
       background: var(--black);
-      color: var(--white);
+      color: var(--bg);
     }
 
     .btn.secondary {
-      background: #ece7dd;
+      background: var(--card-2);
       color: var(--text);
+      border: 1px solid var(--line);
     }
 
     @media (min-width: 920px) {
@@ -662,7 +751,7 @@
         font-size: 15px;
       }
 
-      .topbar {
+      .mobile-header {
         display: none;
       }
 
@@ -682,13 +771,15 @@
         grid-row: span 2;
       }
 
-      .panel.day-panel,
-      .panel.stats-panel {
-        display: block;
-      }
-
       .bottom-nav {
         display: none;
+      }
+
+      .theme-switcher {
+        left: auto;
+        right: 28px;
+        bottom: 24px;
+        transform: none;
       }
 
       .day-cell {
@@ -741,6 +832,12 @@
         font-size: 13px;
       }
 
+      .theme-btn {
+        min-width: 74px;
+        font-size: 12px;
+        padding: 0 10px;
+      }
+
       .task-item {
         grid-template-columns: 24px 1fr auto;
       }
@@ -767,7 +864,7 @@
       </div>
     </header>
 
-    <div class="topbar">
+    <header class="mobile-header">
       <div class="brand">
         <h1>Мой Планнер</h1>
         <div class="sub">Минималистичный календарь задач</div>
@@ -777,13 +874,19 @@
         <div class="avatar" id="mobileAvatar">A</div>
         <button class="icon-btn" id="mobileAddBtn">+</button>
       </div>
-    </div>
+    </header>
 
     <main class="page-grid">
       <section class="panel month-panel active" id="monthPanel"></section>
       <section class="panel day-panel" id="dayPanel"></section>
       <section class="panel stats-panel" id="statsPanel"></section>
     </main>
+
+    <div class="theme-switcher">
+      <button class="theme-btn" data-theme="cream">Бежевый</button>
+      <button class="theme-btn" data-theme="white">Белый</button>
+      <button class="theme-btn" data-theme="dark">Тёмный</button>
+    </div>
 
     <nav class="bottom-nav">
       <button class="nav-btn active" data-view="month">Месяц</button>
@@ -846,17 +949,17 @@
     if (tg) {
       tg.ready();
       tg.expand();
-      tg.setHeaderColor?.("#f4f1eb");
-      tg.setBackgroundColor?.("#f4f1eb");
     }
 
-    const STORAGE_KEY = "telegram_planner_minimal_web_v1";
+    const STORAGE_KEY = "telegram_planner_minimal_web_v2";
+    const THEME_KEY = "telegram_planner_theme_v1";
 
     const state = {
       view: "month",
       currentMonth: startOfMonth(new Date()),
       selectedDate: formatDate(new Date()),
-      tasks: loadTasks()
+      tasks: loadTasks(),
+      theme: loadTheme()
     };
 
     let sortableInstance = null;
@@ -880,6 +983,7 @@
 
     document.getElementById("desktopAddBtn").onclick = () => openModal();
     document.getElementById("mobileAddBtn").onclick = () => openModal();
+
     document.getElementById("desktopTodayBtn").onclick = () => {
       state.selectedDate = formatDate(new Date());
       state.currentMonth = startOfMonth(new Date());
@@ -897,6 +1001,14 @@
       button.addEventListener("click", () => {
         state.view = button.dataset.view;
         render();
+      });
+    });
+
+    document.querySelectorAll(".theme-btn").forEach(button => {
+      button.addEventListener("click", () => {
+        state.theme = button.dataset.theme;
+        saveTheme(state.theme);
+        applyTheme(state.theme);
       });
     });
 
@@ -965,6 +1077,33 @@
 
     function saveTasks() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state.tasks));
+    }
+
+    function loadTheme() {
+      return localStorage.getItem(THEME_KEY) || "cream";
+    }
+
+    function saveTheme(theme) {
+      localStorage.setItem(THEME_KEY, theme);
+    }
+
+    function applyTheme(theme) {
+      document.body.setAttribute("data-theme", theme);
+
+      const bgMap = {
+        cream: "#f4f1eb",
+        white: "#ffffff",
+        dark: "#0f1115"
+      };
+
+      if (tg) {
+        tg.setHeaderColor?.(bgMap[theme] || "#f4f1eb");
+        tg.setBackgroundColor?.(bgMap[theme] || "#f4f1eb");
+      }
+
+      document.querySelectorAll(".theme-btn").forEach(button => {
+        button.classList.toggle("active", button.dataset.theme === theme);
+      });
     }
 
     function createId() {
@@ -1122,13 +1261,6 @@
       const weekdays = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
 
       monthPanel.innerHTML = `
-        <div class="topbar">
-          <div class="brand">
-            <h1>Мой Планнер</h1>
-            <div class="sub">Календарь задач</div>
-          </div>
-        </div>
-
         <div class="panel-title">
           <div>
             <h2>${year}</h2>
@@ -1462,6 +1594,7 @@
       modal.classList.remove("open");
     }
 
+    applyTheme(state.theme);
     render();
   </script>
 </body>
